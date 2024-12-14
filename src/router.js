@@ -1,0 +1,39 @@
+import { createRouter, createWebHistory } from 'vue-router';
+import Dashboard from './views/Dashboard.vue';
+import Login from './views/Login.vue';
+import Profile from './views/Profile.vue';
+import About from './views/About.vue';
+
+const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
+  {
+    path: '/',
+    name: 'Dashboard',
+    component: Dashboard,
+    // meta: { requiresAuth: true },  
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    // meta: { requiresAuth: true },
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: About, 
+  },
+];
+
+// Utwórz router
+const router = createRouter({
+  history: createWebHistory(), // Używa historii przeglądarki (czyste URL)
+  routes,
+});
+
+
+export default router;
