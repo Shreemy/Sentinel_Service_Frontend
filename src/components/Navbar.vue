@@ -81,4 +81,7 @@
 </template>
 
 <style scoped>
+nav {
+    max-height: 55px
+}
 </style>

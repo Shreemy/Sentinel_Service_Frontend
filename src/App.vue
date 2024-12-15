@@ -13,10 +13,13 @@
 
 <template>
   <Navbar v-if="isAuthenticated" />
-  <div class="bg-secondary vw-100 vh-100">
+  <div class="main-content bg-secondary vw-100 vh-100">
     <router-view></router-view>
   </div>
 </template>
 
 <style scoped>
+.main-content {
+  padding-top: 10%;
+}
 </style>
