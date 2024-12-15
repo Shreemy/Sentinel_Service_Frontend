@@ -71,7 +71,7 @@
   
       <!-- Tabela użytkowników -->
       <div class="table-container p-3 rounded bg-dark text-light mt-3">
-        <table class="table table-hover text-light">
+        <table class="table table-hover table-dark">
           <thead>
             <tr>
               <th>#</th>
