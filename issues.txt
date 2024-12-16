@@ -2,13 +2,4 @@ JWT - token po logowaniu
 Responsywność navbar - szerokość i wysokość - bg
 Responsywność Logon/UserDetaili - wysokość - white space
 Komunikacja https
-paginacje
-cors?
-
-
-<template>
-    <UserTable/>
-</template>
-<script setup>
-    import UserTable from '../components/UserTable.vue'
-</script>
+paginacje/sortowanie

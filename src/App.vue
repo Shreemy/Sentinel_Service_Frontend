@@ -1,7 +1,5 @@
 <script setup>
   import Navbar from './components/Navbar.vue';
-  import HelloWorld from './components/HelloWorld.vue'
-  import TheWelcome from './components/TheWelcome.vue'
   import { ref } from 'vue';
 
   const isAuthenticated = ref(true);

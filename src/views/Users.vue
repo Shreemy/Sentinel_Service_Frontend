@@ -1,186 +1,294 @@
 <template>
-    <div class="container my-4">
-      <!-- Formularz wyszukiwania -->
-      <div class="search-container p-3 rounded bg-dark text-light" data-bs-theme="text-bg-secondary">
-        <form @submit.prevent="search" class="mb-3">
-          <div class="row g-3 align-items-end">
-            <!-- Login -->
-            <div class="col-md-4">
-              <label for="login" class="form-label">Login</label>
+  <div class="container my-4">
+    <!-- Unified Alert Handling -->
+    <div
+      v-if="alertMessage"
+      :class="['alert', alertTypeClass, 'd-flex', 'justify-content-between', 'align-items-center']"
+      role="alert"
+    >
+      <span>{{ alertMessage }}</span>
+      <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
+    </div>
+
+    <!-- Search Form -->
+    <div class="search-container p-3 rounded bg-dark text-light">
+      <form @submit.prevent="search" class="mb-3">
+        <div class="row g-3 align-items-end">
+          <!-- Login -->
+          <div class="col-md-4 position-relative">
+            <label for="login" class="form-label">Login</label>
+            <div class="input-wrapper">
               <input
                 v-model="filters.login"
                 type="text"
                 id="login"
-                class="form-control"
+                class="form-control pe-5"
                 placeholder="Search by login"
               />
+              <button type="button" class="btn-close-field" @click="clearField('login')" aria-label="Clear"></button>
             </div>
-  
-            <!-- Email -->
-            <div class="col-md-4">
-              <label for="email" class="form-label">Email</label>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-4 position-relative">
+            <label for="email" class="form-label">Email</label>
+            <div class="input-wrapper">
               <input
                 v-model="filters.email"
                 type="text"
                 id="email"
-                class="form-control"
+                class="form-control pe-5"
                 placeholder="Search by email"
               />
+              <button type="button" class="btn-close-field" @click="clearField('email')" aria-label="Clear"></button>
             </div>
-  
-            <!-- Phone Number -->
-            <div class="col-md-4">
-              <label for="phone_number" class="form-label">Phone Number</label>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="col-md-4 position-relative">
+            <label for="phone_number" class="form-label">Phone Number</label>
+            <div class="input-wrapper">
               <input
                 v-model="filters.phone_number"
                 type="text"
                 id="phone_number"
-                class="form-control"
+                class="form-control pe-5"
                 placeholder="Search by phone number"
               />
-            </div>
-  
-            <!-- Account Type -->
-            <div class="col-md-4">
-              <label for="account_type" class="form-label">Account Type</label>
-              <select v-model="filters.account_type" id="account_type" class="form-select">
-                <option value="">All</option>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
-              </select>
-            </div>
-  
-            <!-- Status -->
-            <div class="col-md-4">
-              <label for="is_active" class="form-label">Status</label>
-              <select v-model="filters.is_active" id="is_active" class="form-select">
-                <option value="">All</option>
-                <option :value="true">Active</option>
-                <option :value="false">Inactive</option>
-              </select>
-            </div>
-  
-            <!-- Buttons -->
-            <div class="col-md-4 d-flex justify-content-end">
-              <button type="submit" class="btn btn-primary me-2">Search</button>
-              <button type="button" class="btn btn-secondary" @click="resetFilters">Reset</button>
+              <button type="button" class="btn-close-field" @click="clearField('phone_number')" aria-label="Clear"></button>
             </div>
           </div>
-        </form>
-      </div>
-  
-      <!-- Tabela użytkowników -->
-      <div class="table-container p-3 rounded bg-dark text-light mt-3">
-        <table class="table table-hover table-dark">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Login</th>
-              <th>Email</th>
-              <th>Phone Number</th>
-              <th>Account Type</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(user, index) in users"
-              :key="user.guid"
-              @click="selectUser(user)"
-              style="cursor: pointer;"
-            >
-              <td>{{ index + 1 }}</td>
-              <td>{{ user.login }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.phone_number }}</td>
-              <td>{{ user.account_type }}</td>
-              <td>{{ user.is_active }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-  
-      <!-- Szczegóły użytkownika -->
-      <UserDetail v-if="selectedUser" :user="selectedUser" @close="selectedUser = null" />
+
+          <!-- Account Type -->
+          <div class="col-md-2">
+            <label for="account_type" class="form-label">Type</label>
+            <select v-model="filters.account_type" id="account_type" class="form-select">
+              <option value="">All</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-2">
+            <label for="is_active" class="form-label">Status</label>
+            <select v-model="filters.is_active" id="is_active" class="form-select">
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-md-8 d-flex justify-content-end">
+            <button type="button" class="btn btn-success col-md-3 me-3">
+              <i class="bi bi-person-add me-1"></i>Add user</button>
+            <button type="submit" class="btn btn-primary col-md-3 me-3">
+              <i class="bi bi-search me-1"></i>Search</button>
+            <button type="button" class="btn btn-secondary col-md-3" @click="resetFilters">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+          </div>
+        </div>
+      </form>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import UserDetail from '../components/UserDetail.vue';
-  
-  // Lista użytkowników
-  const users = ref([]);
-  
-  // Zmienna do przechowywania wybranego użytkownika
-  const selectedUser = ref(null);
-  
-  // Filtry do wyszukiwania
-  const filters = ref({
+
+    <!-- User Table -->
+    <div class="table-container p-3 rounded bg-dark text-light mt-3">
+      <table class="table table-hover table-dark table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Login</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Account Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(user, index) in users" :key="user.guid">
+            <td>{{ index + 1 }}</td>
+            <td>{{ user.login }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone_number }}</td>
+            <td>{{ user.account_type }}</td>
+            <td>{{ user.is_active }}</td>
+            <td>
+              <!-- Action Buttons -->
+              <button class="btn btn-warning btn-sm me-2" @click="selectUser(user)">
+                <i class="bi bi-tools"></i>
+              </button>
+              <button class="btn btn-danger btn-sm" @click="deleteUser(user.guid)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+
+// Users List
+const users = ref([]);
+
+// Alert Variables
+const alertMessage = ref('');
+const alertType = ref(''); // Types: 'success', 'danger', etc.
+
+// Dynamic Alert Class
+const alertTypeClass = computed(() => {
+  switch (alertType.value) {
+    case 'success':
+      return 'alert-success';
+    case 'danger':
+      return 'alert-danger';
+    default:
+      return 'alert-info';
+  }
+});
+
+// Filters for Search
+const filters = ref({
+  login: '',
+  email: '',
+  phone_number: '',
+  account_type: '',
+  is_active: '',
+});
+
+// Search Users
+async function search() {
+  try {
+    const queryParams = new URLSearchParams(
+      Object.fromEntries(Object.entries(filters.value).filter(([_, v]) => v !== ''))
+    );
+
+    const response = await fetch(`http://10.21.37.56:5000/api/v1/searchUser?${queryParams}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      setAlert(errorData.message || 'Failed to fetch users', 'danger');
+      users.value = []; // Clear the table on error
+      throw new Error(errorData.message);
+    }
+
+    users.value = await response.json();
+    clearAlert(); // Clear alert on success
+  } catch (error) {
+    users.value = []; // Clear table on error
+    console.error('Error fetching users:', error.message);
+  }
+}
+
+// Reset Filters
+function resetFilters() {
+  filters.value = {
     login: '',
     email: '',
     phone_number: '',
     account_type: '',
     is_active: '',
-  });
-  
-  // Funkcja wyszukiwania
-  async function search() {
-    try {
-      // Budowanie URL z parametrami wyszukiwania
-      const queryParams = new URLSearchParams(
-        Object.fromEntries(
-          Object.entries(filters.value).filter(([_, v]) => v !== '')
-        )
-      );
-  
-      const response = await fetch(`https://your-backend.com/api/v1/searchUser?${queryParams}`, {
-        method: 'GET',
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
-      }
-  
-      users.value = await response.json();
-    } catch (error) {
-      console.error('Error fetching users:', error.message);
+  };
+  search();
+}
+
+// Delete User
+async function deleteUser(guid) {
+  if (!confirm('Are you sure you want to delete this user?')) return;
+
+  try {
+    const response = await fetch(`http://10.21.37.56:5000/api/v1/user?id=${guid}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      setAlert(errorData.message || 'Failed to delete user', 'danger');
+      throw new Error(errorData.message);
     }
+
+    setAlert('User deleted successfully', 'success');
+    search(); // Refresh user list after deletion
+  } catch (error) {
+    console.error('Error deleting user:', error.message);
   }
-  
-  // Funkcja resetowania filtrów
-  function resetFilters() {
-    filters.value = {
-      login: '',
-      email: '',
-      phone_number: '',
-      account_type: '',
-      is_active: '',
-    };
-    search(); // Odśwież listę użytkowników bez filtrów
-  }
-  
-  // Wybranie użytkownika z tabeli
-  function selectUser(user) {
-    selectedUser.value = user; // Przechowuje szczegóły wybranego użytkownika
-  }
-  
-  // Pobranie danych użytkowników po załadowaniu komponentu
-  onMounted(search);
-  </script>
-  
-  <style scoped>
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .search-container {
-    color: white;
-  }
-  
-  label {
-    font-weight: bold;
-  }
-  </style>
-  
+}
+
+// Clear Specific Field
+function clearField(field) {
+  filters.value[field] = '';
+}
+
+// Set Alert
+function setAlert(message, type) {
+  alertMessage.value = message;
+  alertType.value = type;
+}
+
+// Clear Alert
+function clearAlert() {
+  alertMessage.value = '';
+  alertType.value = '';
+}
+
+// Select User
+function selectUser(user) {
+  setAlert(`Selected user: ${user.guid}`, 'info');
+}
+
+// Fetch Users on Component Mount
+onMounted(search);
+</script>
+
+<style scoped>
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-container {
+  color: white;
+}
+
+label {
+  font-weight: bold;
+}
+
+.alert {
+  margin-top: 20px;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.btn-close-field {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-close-field::after {
+  content: '✕';
+  font-size: 14px;
+  color: gray;
+}
+</style>

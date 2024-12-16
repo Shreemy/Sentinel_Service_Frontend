@@ -3,7 +3,6 @@ import Dashboard from './views/Dashboard.vue';
 import Login from './views/Login.vue';
 import Profile from './views/Profile.vue';
 import Users from './views/Users.vue';
-import About from './views/About.vue';
 
 const routes = [
   {
@@ -28,11 +27,6 @@ const routes = [
     name: 'Users',
     component: Users,
     // meta: { requiresAuth: true },
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About, 
   },
 ];
 
