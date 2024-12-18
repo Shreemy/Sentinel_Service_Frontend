@@ -3,3 +3,6 @@ Responsywność navbar - szerokość i wysokość - bg
 Responsywność Logon/UserDetaili - wysokość - white space
 Komunikacja https
 paginacje/sortowanie
+
+// TODO: add TOAST with result in /profile/guid
+// TODO: change alerts to toasts in /users

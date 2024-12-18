@@ -3,9 +3,7 @@
     <!-- Unified Alert Handling -->
     <div
       v-if="alertMessage"
-      :class="['alert', alertTypeClass, 'd-flex', 'justify-content-between', 'align-items-center']"
-      role="alert"
-    >
+      :class="['alert', alertTypeClass, 'd-flex', 'justify-content-between', 'align-items-center']" role="alert">
       <span>{{ alertMessage }}</span>
       <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
     </div>
@@ -18,13 +16,7 @@
           <div class="col-md-4 position-relative">
             <label for="login" class="form-label">Login</label>
             <div class="input-wrapper">
-              <input
-                v-model="filters.login"
-                type="text"
-                id="login"
-                class="form-control pe-5"
-                placeholder="Search by login"
-              />
+              <input v-model="filters.login" type="text" id="login" class="form-control pe-5" placeholder="Search by login"/>
               <button type="button" class="btn-close-field" @click="clearField('login')" aria-label="Clear"></button>
             </div>
           </div>
@@ -33,13 +25,7 @@
           <div class="col-md-4 position-relative">
             <label for="email" class="form-label">Email</label>
             <div class="input-wrapper">
-              <input
-                v-model="filters.email"
-                type="text"
-                id="email"
-                class="form-control pe-5"
-                placeholder="Search by email"
-              />
+              <input v-model="filters.email" type="text" id="email" class="form-control pe-5" placeholder="Search by email"/>
               <button type="button" class="btn-close-field" @click="clearField('email')" aria-label="Clear"></button>
             </div>
           </div>
@@ -48,13 +34,7 @@
           <div class="col-md-4 position-relative">
             <label for="phone_number" class="form-label">Phone Number</label>
             <div class="input-wrapper">
-              <input
-                v-model="filters.phone_number"
-                type="text"
-                id="phone_number"
-                class="form-control pe-5"
-                placeholder="Search by phone number"
-              />
+              <input v-model="filters.phone_number" type="text" id="phone_number" class="form-control pe-5" placeholder="Search by phone number"/>
               <button type="button" class="btn-close-field" @click="clearField('phone_number')" aria-label="Clear"></button>
             </div>
           </div>
@@ -81,10 +61,8 @@
 
           <!-- Buttons -->
           <div class="col-md-8 d-flex justify-content-end">
-            <button type="button" class="btn btn-success col-md-3 me-3">
-              <i class="bi bi-person-add me-1"></i>Add user</button>
-            <button type="submit" class="btn btn-primary col-md-3 me-3">
-              <i class="bi bi-search me-1"></i>Search</button>
+            <button type="button" class="btn btn-success col-md-3 me-3" @click="newUser"><i class="bi bi-person-add me-1"></i>Add user</button>
+            <button type="submit" class="btn btn-primary col-md-3 me-3"><i class="bi bi-search me-1"></i>Search</button>
             <button type="button" class="btn btn-secondary col-md-3" @click="resetFilters">
               <i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
           </div>
@@ -116,30 +94,56 @@
             <td>{{ user.is_active }}</td>
             <td>
               <!-- Action Buttons -->
-              <button class="btn btn-warning btn-sm me-2" @click="selectUser(user)">
-                <i class="bi bi-tools"></i>
-              </button>
-              <button class="btn btn-danger btn-sm" @click="deleteUser(user.guid)">
-                <i class="bi bi-trash"></i>
-              </button>
+              <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modifyUserModal"
+              @click="modifyUser(user.guid)"><i class="bi bi-tools"></i></button>
+              <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+              @click="openDeleteModal(user.guid)"><i class="bi bi-trash"></i></button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Delete</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">Are you sure you want to delete this user?</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="confirmDelete">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import UserDetails from '../components/UserDetails.vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 // Users List
 const users = ref([]);
 
+const apiBaseUrl = import.meta.env.VITE_API_URL;
+
 // Alert Variables
 const alertMessage = ref('');
-const alertType = ref(''); // Types: 'success', 'danger', etc.
+const alertType = ref(''); // Types: 'success', 'danger'
+
+// Currently Selected User for Deletion
+const userToDelete = ref(null);
+const url = ref('');
 
 // Dynamic Alert Class
 const alertTypeClass = computed(() => {
@@ -150,8 +154,21 @@ const alertTypeClass = computed(() => {
       return 'alert-danger';
     default:
       return 'alert-info';
-  }
-});
+    }
+  });
+  
+// Set Alert
+function setAlert(message, type) {
+  alertMessage.value = message;
+  alertType.value = type;
+  closeModal();
+}
+
+// Clear Alert
+function clearAlert() {
+  alertMessage.value = '';
+  alertType.value = '';
+}
 
 // Filters for Search
 const filters = ref({
@@ -161,33 +178,6 @@ const filters = ref({
   account_type: '',
   is_active: '',
 });
-
-// Search Users
-async function search() {
-  try {
-    const queryParams = new URLSearchParams(
-      Object.fromEntries(Object.entries(filters.value).filter(([_, v]) => v !== ''))
-    );
-
-    const response = await fetch(`http://10.21.37.56:5000/api/v1/searchUser?${queryParams}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      setAlert(errorData.message || 'Failed to fetch users', 'danger');
-      users.value = []; // Clear the table on error
-      throw new Error(errorData.message);
-    }
-
-    users.value = await response.json();
-    clearAlert(); // Clear alert on success
-  } catch (error) {
-    users.value = []; // Clear table on error
-    console.error('Error fetching users:', error.message);
-  }
-}
 
 // Reset Filters
 function resetFilters() {
@@ -201,12 +191,49 @@ function resetFilters() {
   search();
 }
 
-// Delete User
-async function deleteUser(guid) {
-  if (!confirm('Are you sure you want to delete this user?')) return;
+// Search Users
+async function search() {
+  try {
+    const queryParams = new URLSearchParams(
+      Object.fromEntries(Object.entries(filters.value).filter(([_, v]) => v !== ''))
+    );
+    
+    const response = await fetch(`${apiBaseUrl}/searchUser?${queryParams}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      setAlert(errorData.message || 'Failed to fetch users', 'danger');
+      users.value = []; // Clear the table on error
+      throw new Error(errorData.message);
+    }
+    
+    users.value = await response.json();
+    clearAlert(); // Clear alert on success
+  } catch (error) {
+    users.value = []; // Clear table on error
+    console.error('Error fetching users:', error.message);
+  }
+}
+
+// Clear Specific Field
+function clearField(field) {
+  filters.value[field] = '';
+}
+
+// Open Delete Modal
+function openDeleteModal(guid) {
+  userToDelete.value = guid;
+}
+
+// Confirm Delete
+async function confirmDelete() {
+  if (!userToDelete.value) return;
 
   try {
-    const response = await fetch(`http://10.21.37.56:5000/api/v1/user?id=${guid}`, {
+    const response = await fetch(`${apiBaseUrl}/user?id=${userToDelete.value}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -218,32 +245,30 @@ async function deleteUser(guid) {
     }
 
     setAlert('User deleted successfully', 'success');
+    userToDelete.value = null; // Reset selected user
     search(); // Refresh user list after deletion
   } catch (error) {
     console.error('Error deleting user:', error.message);
   }
 }
 
-// Clear Specific Field
-function clearField(field) {
-  filters.value[field] = '';
+// Close Modal Programmatically
+function closeModal() {
+  const modal = document.getElementById('confirmDeleteModal');
+  if (modal) {
+    const bsModal = bootstrap.Modal.getInstance(modal);
+    bsModal.hide();
+  }
 }
 
-// Set Alert
-function setAlert(message, type) {
-  alertMessage.value = message;
-  alertType.value = type;
+// Modify User
+function modifyUser(guid) {
+  router.push('/profile/' + guid);
 }
 
-// Clear Alert
-function clearAlert() {
-  alertMessage.value = '';
-  alertType.value = '';
-}
-
-// Select User
-function selectUser(user) {
-  setAlert(`Selected user: ${user.guid}`, 'info');
+// New User
+function newUser() {
+  router.push('/newUser');
 }
 
 // Fetch Users on Component Mount
@@ -266,6 +291,10 @@ label {
 
 .alert {
   margin-top: 20px;
+}
+
+.modal-content.bg-dark {
+  background-color: #343a40;
 }
 
 .position-relative {
