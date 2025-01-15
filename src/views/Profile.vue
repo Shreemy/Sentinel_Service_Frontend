@@ -1,75 +1,86 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center">
-      <form @submit.prevent="save" class="p-4 border rounded text-light bg-dark d-flex flex-column justify-content-between">
-        <Logo />
-        <div class="mb-2">
-          <label for="login" class="form-label small d-block mb-0">Login</label>
-          <input v-model="form.login" type="text" class="form-control-sm border-dark w-100" id="login">
-        </div>
+  <div class="d-flex justify-content-center align-items-center">
+    <form @submit.prevent="save" class="p-4 border rounded text-light bg-dark d-flex flex-column justify-content-between">
+      <Logo />
+      <div class="mb-2">
+        <label for="login" class="form-label small d-block mb-0">Login</label>
+        <input v-model="form.login" type="text" class="form-control-sm border-dark w-100" id="login">
+      </div>
+
+      <div class="mb-2">
+        <label for="email" class="form-label small d-block mb-0">Email</label>
+        <input v-model="form.email" type="email" class="form-control-sm border-dark w-100" id="email">
+      </div>
+
+      <div class="mb-2">
+        <label for="phone" class="form-label small d-block mb-0">Phone number</label>
+        <input v-model="form.phone_number" type="text" id="phone" class="form-control-sm border-dark w-100" pattern="^[+]?[0-9]{10,15}$">
+      </div>
+
+      <div class="mb-2">
+        <label for="accountType" class="form-label small d-block mb-0">Account Type</label>
+        <input v-model="form.account_type" type="text" class="form-control-sm border-dark w-100" id="accountType" readonly>
+      </div>
+
+      <div v-if="!isProfileRoute" class="mb-3">
+        <label for="status" class="form-label small d-block mb-0">Status</label>
+        <input v-model="form.is_active" type="text" class="form-control-sm border-dark w-100" id="status" readonly>
+      </div>
+
+      <!-- Buttons section -->
+      <div class="d-flex justify-content-between mt-3">
+        <button type="submit" class="btn text-bg-success flex-fill me-2">Save</button>
+        <button type="button" class="btn text-bg-danger flex-fill" @click="cancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</template>
   
-        <div class="mb-2">
-          <label for="email" class="form-label small d-block mb-0">Email</label>
-          <input v-model="form.email" type="email" class="form-control-sm border-dark w-100" id="email">
-        </div>
-  
-        <div class="mb-2">
-          <label for="phone" class="form-label small d-block mb-0">Phone number</label>
-          <input v-model="form.phone_number" type="text" id="phone" class="form-control-sm border-dark w-100" pattern="^[+]?[0-9]{10,15}$">
-        </div>
-  
-        <div class="mb-2">
-          <label for="accountType" class="form-label small d-block mb-0">Account Type</label>
-          <input v-model="form.account_type" type="text" class="form-control-sm border-dark w-100" id="accountType" :disabled="isProfileRoute" readonly>
-        </div>
-  
-        <div v-if="!isProfileRoute" class="mb-3">
-          <label for="status" class="form-label small d-block mb-0">Status</label>
-          <input v-model="form.is_active" type="text" class="form-control-sm border-dark w-100" id="status" readonly>
-        </div>
-  
-        <!-- Buttons section -->
-        <div class="d-flex justify-content-between mt-3">
-          <button type="submit" class="btn text-bg-success flex-fill me-2">Save</button>
-          <button type="button" class="btn text-bg-danger flex-fill" @click="cancel">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </template>
-  
-  <script setup>
+<script setup>
   import { ref, onMounted } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   
   const router = useRouter();
   const route = useRoute();
   
-  // Sprawdź, czy działamy w trybie standalone (/profile)
-  const isProfileRoute = route.path === '/profile';
+  const apiBaseUrl = import.meta.env.VITE_API_URL;
   
+  let userId = ref('');
+
   // Stan formularza
   const form = ref({
     login: '',
-    email: '',
-    phone_number: '',
+    email: null,
+    phone_number: null,
     account_type: '',
-    is_active: '',
+    is_active: 'active',
   });
   
-  // Funkcja anulowania
-  function cancel() {
-    router.push('/users');
-  }
-  
-  // Funkcja zapisu
-  async function save() {
-    try {
-      const userId = route.query.id || user.guid; // ID z query lub przekazany w props
+  function fillForm(data) {
+  form.value.login = data.login;
+  form.value.email = data.email || null;
+  form.value.phone_number = data.phone_number || null;
+  form.value.account_type = data.account_type || '';
+  form.value.is_active = data.is_active || 'inactive';
+  userId = data.guid;
+}
+
+// Funkcja anulowania
+function cancel() {
+  router.push('/users');
+}
+
+// Funkcja zapisu
+async function save() {
+  try {
+    // const userId = data[0].guid;
+    // console.log(userId);
       if (!userId) {
         alert('User ID is missing!');
         return;
       }
   
-      const response = await fetch(`https://your-backend.com/api/user?id=${userId}`, {
+      const response = await fetch(`${apiBaseUrl}/user?id=${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form.value),
@@ -86,37 +97,37 @@
     }
   }
   
-  // Pobierz dane użytkownika z backendu (gdy działamy na /profile)
-  async function fetchUserDetails() {
+async function fetchUserDetails() {
   try {
-    const userId = route.params.guid; // Pobierz 'guid' z parametrów trasy
-    if (!userId) {
-      console.error('User GUID is missing in the route!');
-      return;
-    }
+    const response = await fetch(`${apiBaseUrl}/whoami`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      },
+    });
 
-    const response = await fetch(`https://your-backend.com/api/user?id=${userId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch user details');
     }
 
     const data = await response.json();
-    form.value = data; // Wypełnij formularz danymi użytkownika
+    fillForm(data[0]); // Przekazujemy cały obiekt
+
   } catch (error) {
     console.error('Error fetching user details:', error.message);
   }
 }
 
+
   
   // Inicjalizacja danych w formularzu
-  onMounted(() => {
-  if (isProfileRoute) {
-    fetchUserDetails(); // Pobierz dane użytkownika, jeśli jesteśmy na trasie /profile/:guid
-  }
+onMounted(() => {
+  fetchUserDetails();
 });
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
   form {
     height: 55%;
     min-height: 415px;
@@ -125,5 +136,5 @@
     min-width: 280px;
     max-width: 350px;
   }
-  </style>
+</style>
   

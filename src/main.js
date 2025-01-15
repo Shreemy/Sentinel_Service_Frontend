@@ -8,7 +8,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.js'
 
 router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('token'); // Sprawdź token w localStorage
+    const token = localStorage.getItem('access_token'); // Sprawdź token w localStorage
 
     if (to.meta.requiresAuth && !token) {
         // Jeśli wymaga logowania i brak tokenu

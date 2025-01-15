@@ -89,7 +89,7 @@
             <td>{{ index + 1 }}</td>
             <td>{{ user.login }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.phone_number }}</td>
+            <td>{{ user.phone_number || 'N/A' }}</td>
             <td>{{ user.account_type }}</td>
             <td>{{ user.is_active }}</td>
             <td>
@@ -128,7 +128,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import UserDetails from '../components/UserDetails.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -200,7 +199,10 @@ async function search() {
     
     const response = await fetch(`${apiBaseUrl}/searchUser?${queryParams}`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      },
     });
 
     if (!response.ok) {
@@ -235,7 +237,10 @@ async function confirmDelete() {
   try {
     const response = await fetch(`${apiBaseUrl}/user?id=${userToDelete.value}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      },
     });
 
     if (!response.ok) {
@@ -246,10 +251,10 @@ async function confirmDelete() {
 
     setAlert('User deleted successfully', 'success');
     userToDelete.value = null; // Reset selected user
-    search(); // Refresh user list after deletion
   } catch (error) {
     console.error('Error deleting user:', error.message);
   }
+  await search();
 }
 
 // Close Modal Programmatically
