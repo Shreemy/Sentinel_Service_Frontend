@@ -1,10 +1,8 @@
 <template>
     <p>
-        <img src="\src\assets\logo.png" alt="Logo" width="25" height="25" class="align-text-top">
+        <img src="@/assets/logo.png" alt="Logo" width="25" height="25" class="align-text-top">
         Sentinel Service
     </p>
-    <!-- <img src="\src\assets\logo.png" alt="Logo" width="25" height="25" class="align-text-top">
-    Sentinel Service -->
 </template>
 
 <style scoped>

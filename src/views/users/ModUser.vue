@@ -108,7 +108,6 @@
         </select>
       </div>
 
-      <!-- Buttons section -->
       <div class="d-flex justify-content-between mt-3">
         <button
           type="submit"
@@ -122,6 +121,7 @@
     </form>
   </div>
 </template>
+
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -131,7 +131,6 @@ const route = useRoute();
 
 const apiBaseUrl = import.meta.env.VITE_API_URL;
 
-// Pola formularza
 const form = ref({
   login: '',
   email: '',
@@ -142,11 +141,9 @@ const form = ref({
   is_active: '',
 });
 
-// Stany dla podglądu haseł
 const showPassword = ref(false);
 const showRetypePassword = ref(false);
 
-// Walidacja formularza
 const isFormValid = computed(() => {
   return (
     form.value.login &&
@@ -157,7 +154,6 @@ const isFormValid = computed(() => {
   );
 });
 
-// Funkcja podglądu hasła
 function togglePasswordVisibility(field) {
   if (field === 'password') {
     showPassword.value = !showPassword.value;
@@ -166,12 +162,10 @@ function togglePasswordVisibility(field) {
   }
 }
 
-// Funkcja anulowania
 function cancel() {
   router.push('/users');
 }
 
-// Funkcja pobierania danych użytkownika
 async function fetchUserDetails() {
   try {
     const userId = route.params.guid;
@@ -180,14 +174,14 @@ async function fetchUserDetails() {
       return;
     }
 
-    const response = await fetch(`${apiBaseUrl}/user?id=${userId}`,
-      { method: 'GET',
-        headers: {
+    const response = await fetch(`${apiBaseUrl}/user?id=${userId}`, {
+      method: 'GET',
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`
       }
-      }
-    );
+    });
+
     if (!response.ok) {
       throw new Error('Failed to fetch user details');
     }
@@ -201,7 +195,6 @@ async function fetchUserDetails() {
   }
 }
 
-// Funkcja wypełniania formularza
 function fillForm(user) {
   form.value.login = user.login || '';
   form.value.email = user.email || null;
@@ -210,7 +203,6 @@ function fillForm(user) {
   form.value.is_active = user.is_active || '';
 }
 
-// Funkcja zapisu
 async function save() {
   try {
     const userId = route.params.guid;
@@ -223,16 +215,15 @@ async function save() {
       alert('Passwords do not match!');
       return;
     }
-    
+
     const payload = {
       ...form.value,
       email: form.value.email ? form.value.email : null,
       phone_number: form.value.phone_number ? form.value.phone_number : null,
-     };
+    };
     if (!form.value.password) {
       delete payload.password;
     }
-
 
     const response = await fetch(`${apiBaseUrl}/user?id=${userId}`, {
       method: 'PUT',
@@ -254,13 +245,13 @@ async function save() {
   }
 }
 
-// Inicjalizacja
 onMounted(() => {
   if (route.params.guid) {
     fetchUserDetails();
   }
 });
 </script>
+
 <style scoped>
 form {
   width: 40%;

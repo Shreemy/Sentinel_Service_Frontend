@@ -15,7 +15,6 @@
                     </button>
                 </div>
             </div>
-            
             <button type="submit" class="btn text-bg-success mt-3">Login</button>
             <div v-if="errorMessage" class="alert alert-danger mt-2">{{ errorMessage }}</div>
         </form>
@@ -31,27 +30,22 @@ import { onMounted } from 'vue';
 const router = useRouter();
 const apiBaseUrl = import.meta.env.VITE_API_URL;
 
-// Dane logowania
 const login = ref('');
 const password = ref('');
 const showPassword = ref(false);
 const errorMessage = ref('');
 
-// Funkcja do przełączania widoczności hasła
 function togglePasswordVisibility() {
     showPassword.value = !showPassword.value;
 }
 
-// Funkcja logowania
 async function handleLogin() {
-    errorMessage.value = ''; // Wyczyszczenie poprzednich błędów
+    errorMessage.value = '';
 
     try {
         const response = await fetch(`${apiBaseUrl}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // credentials: 'include',
-            // mode: 'no-cors',
             body: JSON.stringify({
                 login: login.value,
                 password: password.value
@@ -64,9 +58,9 @@ async function handleLogin() {
         }
 
         const data = await response.json();
-        localStorage.setItem('access_token', data.access_token); // Zapisz token w localStorage
+        localStorage.setItem('access_token', data.access_token);
 
-        router.push('/'); // Przekierowanie do dashboardu
+        router.push('/');
     } catch (error) {
         errorMessage.value = error.message;
         console.error('Login error:', error.message);

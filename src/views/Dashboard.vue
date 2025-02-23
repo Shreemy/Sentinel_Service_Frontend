@@ -16,11 +16,11 @@
       <tbody>
         <tr v-for="service in services" :key="service.guid">
           <td>{{ service.name }}</td>
-            <td>
+          <td>
             <span class="badge bg-danger" style="height: 100%;">
               {{ service.actual_state }}
             </span>
-            </td>
+          </td>
           <td>{{ service.address }}</td>
           <td>
             <button
@@ -55,7 +55,6 @@ const error = ref(null);
 const success = ref(null);
 let intervalId = null;
 
-// Pobieranie danych z API
 async function fetchServices() {
   isLoading.value = true;
   error.value = null;
@@ -67,7 +66,6 @@ async function fetchServices() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`
       },
-
     });
     if (!response.ok) {
       throw new Error('Failed to fetch services data');
@@ -75,7 +73,6 @@ async function fetchServices() {
 
     const data = await response.json();
 
-    // Sprawdź, czy odpowiedź zawiera komunikat zamiast listy usług
     if (data.message) {
       success.value = data.message;
       services.value = [];
@@ -91,20 +88,17 @@ async function fetchServices() {
   }
 }
 
-// Nawigacja do szczegółów usługi
 function goToServiceDetails(guid) {
   if (guid) {
     router.push(`/serviceDetails/${guid}`);
   }
 }
 
-// Automatyczne odświeżanie co minutę
 onMounted(() => {
   fetchServices();
-  intervalId = setInterval(fetchServices, 60000); // 60 sekund
+  intervalId = setInterval(fetchServices, 60000);
 });
 
-// Zatrzymanie odświeżania przy odmontowaniu komponentu
 onUnmounted(() => {
   if (intervalId) {
     clearInterval(intervalId);

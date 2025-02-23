@@ -1,10 +1,10 @@
 <script setup>
-  import Navbar from './components/Navbar.vue';
-  import { ref } from 'vue';
+import Navbar from './components/Navbar.vue';
+import { ref } from 'vue';
 
-  const isAuthenticated = ref(false);
+const isAuthenticated = ref(false);
 
-  if (localStorage.getItem('access_token')) {
+if (localStorage.getItem('access_token')) {
   isAuthenticated.value = true;
 }
 </script>

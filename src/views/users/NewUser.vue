@@ -113,7 +113,6 @@
         </select>
       </div>
 
-      <!-- Buttons section -->
       <div class="d-flex justify-content-between mt-3">
         <button
           type="submit"
@@ -132,13 +131,11 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
-// Import router and environment variables
 const router = useRouter();
 const apiBaseUrl = import.meta.env.VITE_API_URL;
 const showPassword = ref(false);
 const showRetypePassword = ref(false);
 
-// Reactive form object
 const form = ref({
   login: '',
   email: '',
@@ -149,7 +146,6 @@ const form = ref({
   is_active: 'active',
 });
 
-// Computed property to check form validity
 const isFormValid = computed(() => {
   return (
     form.value.login &&
@@ -168,12 +164,10 @@ function togglePasswordVisibility(field) {
   }
 }
 
-// Cancel function
 function cancel() {
   router.push('/users');
 }
 
-// Save function
 async function save() {
   try {
     if (form.value.password !== form.value.retypePassword) {

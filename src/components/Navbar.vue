@@ -1,13 +1,13 @@
 <script setup>
-    import Logo from './Logo.vue';
-    import { useRouter } from 'vue-router';
+import Logo from './Logo.vue';
+import { useRouter } from 'vue-router';
 
-    const router = useRouter();
+const router = useRouter();
 
-    function logout() {
-        localStorage.removeItem('access_token');
-        router.push('/login');
-    }
+function logout() {
+    localStorage.removeItem('access_token');
+    router.push('/login');
+}
 </script>
 
 <template>
@@ -19,14 +19,22 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <router-link class="nav-link " to="/monitor">Monitor</router-link>
+                        <router-link class="nav-link" to="/monitor">Monitor</router-link>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Services</a>
                         <ul class="dropdown-menu">
-                            <li><router-link class="dropdown-item" to="/services"><i class="bi bi-database me-1"></i>Services</router-link></li>
+                            <li>
+                                <router-link class="dropdown-item" to="/services">
+                                    <i class="bi bi-database me-1"></i>Services
+                                </router-link>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><router-link class="dropdown-item" to="/newService"><i class="bi bi-database-add me-1"></i>Add Service</router-link></li>
+                            <li>
+                                <router-link class="dropdown-item" to="/newService">
+                                    <i class="bi bi-database-add me-1"></i>Add Service
+                                </router-link>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -34,11 +42,21 @@
                             Administration
                         </a>
                         <ul class="dropdown-menu">
-                            <li><router-link class="dropdown-item" to="/users"><i class="bi bi-people me-1"></i>Users</router-link></li>
+                            <li>
+                                <router-link class="dropdown-item" to="/users">
+                                    <i class="bi bi-people me-1"></i>Users
+                                </router-link>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><router-link class="dropdown-item" to="/newUser"><i class="bi bi-person-add me-1"></i>Add User</router-link></li>
+                            <li>
+                                <router-link class="dropdown-item" to="/newUser">
+                                    <i class="bi bi-person-add me-1"></i>Add User
+                                </router-link>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><router-link class="dropdown-item" to="/logs">Logs</router-link></li>
+                            <li>
+                                <router-link class="dropdown-item" to="/logs">Logs</router-link>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -78,6 +96,6 @@
 
 <style scoped>
 nav {
-    max-height: 55px
+    max-height: 55px;
 }
 </style>

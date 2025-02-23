@@ -21,13 +21,13 @@ const routes = [
     path: '/',
     name: 'Dashboard',
     component: Dashboard,
-    meta: { requiresAuth: true },  
+    meta: { requiresAuth: true },
   },
   {
     path: '/monitor',
     name: 'Monitor',
     component: Dashboard,
-    meta: { requiresAuth: true },  
+    meta: { requiresAuth: true },
   },
   {
     path: '/profile',
@@ -69,7 +69,7 @@ const routes = [
     component: ModService,
     meta: { requiresAuth: true },
   },
-  { 
+  {
     path: '/newService',
     name: 'newService',
     component: NewService,
@@ -82,9 +82,8 @@ const routes = [
   }
 ];
 
-// Utwórz router
 const router = createRouter({
-  history: createWebHistory(), // Używa historii przeglądarki (czyste URL)
+  history: createWebHistory(),
   routes,
 });
 

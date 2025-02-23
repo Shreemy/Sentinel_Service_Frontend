@@ -1,18 +1,13 @@
 <template>
   <div class="container my-4">
-    <!-- Unified Alert Handling -->
-    <div
-      v-if="alertMessage"
-      :class="['alert', alertTypeClass, 'd-flex', 'justify-content-between', 'align-items-center']" role="alert">
+    <div v-if="alertMessage" :class="['alert', alertTypeClass, 'd-flex', 'justify-content-between', 'align-items-center']" role="alert">
       <span>{{ alertMessage }}</span>
       <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
     </div>
 
-    <!-- Search Form -->
     <div class="search-container p-3 rounded bg-dark text-light">
       <form @submit.prevent="search" class="mb-3">
         <div class="row g-3 align-items-end">
-          <!-- Login -->
           <div class="col-md-4 position-relative">
             <label for="login" class="form-label">Login</label>
             <div class="input-wrapper">
@@ -21,7 +16,6 @@
             </div>
           </div>
 
-          <!-- Email -->
           <div class="col-md-4 position-relative">
             <label for="email" class="form-label">Email</label>
             <div class="input-wrapper">
@@ -30,7 +24,6 @@
             </div>
           </div>
 
-          <!-- Phone Number -->
           <div class="col-md-4 position-relative">
             <label for="phone_number" class="form-label">Phone Number</label>
             <div class="input-wrapper">
@@ -39,7 +32,6 @@
             </div>
           </div>
 
-          <!-- Account Type -->
           <div class="col-md-2">
             <label for="account_type" class="form-label">Type</label>
             <select v-model="filters.account_type" id="account_type" class="form-select">
@@ -49,7 +41,6 @@
             </select>
           </div>
 
-          <!-- Status -->
           <div class="col-md-2">
             <label for="is_active" class="form-label">Status</label>
             <select v-model="filters.is_active" id="is_active" class="form-select">
@@ -59,18 +50,15 @@
             </select>
           </div>
 
-          <!-- Buttons -->
           <div class="col-md-8 d-flex justify-content-end">
             <button type="button" class="btn btn-success col-md-3 me-3" @click="newUser"><i class="bi bi-person-add me-1"></i>Add user</button>
             <button type="submit" class="btn btn-primary col-md-3 me-3"><i class="bi bi-search me-1"></i>Search</button>
-            <button type="button" class="btn btn-secondary col-md-3" @click="resetFilters">
-              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+            <button type="button" class="btn btn-secondary col-md-3" @click="resetFilters"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
           </div>
         </div>
       </form>
     </div>
 
-    <!-- User Table -->
     <div class="table-container p-3 rounded bg-dark text-light mt-3">
       <table class="table table-hover table-dark table-striped">
         <thead>
@@ -93,20 +81,15 @@
             <td>{{ user.account_type }}</td>
             <td>{{ user.is_active }}</td>
             <td>
-              <!-- Action Buttons -->
-              <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modifyUserModal"
-              @click="modifyUser(user.guid)"><i class="bi bi-tools"></i></button>
-              <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
-              @click="openDeleteModal(user.guid)"><i class="bi bi-trash"></i></button>
+              <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modifyUserModal" @click="modifyUser(user.guid)"><i class="bi bi-tools"></i></button>
+              <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="openDeleteModal(user.guid)"><i class="bi bi-trash"></i></button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
-      aria-hidden="true">
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-light">
           <div class="modal-header">
@@ -121,8 +104,6 @@
         </div>
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -132,20 +113,13 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
-// Users List
 const users = ref([]);
-
 const apiBaseUrl = import.meta.env.VITE_API_URL;
-
-// Alert Variables
 const alertMessage = ref('');
-const alertType = ref(''); // Types: 'success', 'danger'
-
-// Currently Selected User for Deletion
+const alertType = ref('');
 const userToDelete = ref(null);
 const url = ref('');
 
-// Dynamic Alert Class
 const alertTypeClass = computed(() => {
   switch (alertType.value) {
     case 'success':
@@ -154,23 +128,20 @@ const alertTypeClass = computed(() => {
       return 'alert-danger';
     default:
       return 'alert-info';
-    }
-  });
-  
-// Set Alert
+  }
+});
+
 function setAlert(message, type) {
   alertMessage.value = message;
   alertType.value = type;
   closeModal();
 }
 
-// Clear Alert
 function clearAlert() {
   alertMessage.value = '';
   alertType.value = '';
 }
 
-// Filters for Search
 const filters = ref({
   login: '',
   email: '',
@@ -179,7 +150,6 @@ const filters = ref({
   is_active: '',
 });
 
-// Reset Filters
 function resetFilters() {
   filters.value = {
     login: '',
@@ -191,13 +161,11 @@ function resetFilters() {
   search();
 }
 
-// Search Users
 async function search() {
   try {
     const queryParams = new URLSearchParams(
       Object.fromEntries(Object.entries(filters.value).filter(([_, v]) => v !== ''))
     );
-    
     const response = await fetch(`${apiBaseUrl}/searchUser?${queryParams}`, {
       method: 'GET',
       headers: { 
@@ -209,29 +177,26 @@ async function search() {
     if (!response.ok) {
       const errorData = await response.json();
       setAlert(errorData.message || 'Failed to fetch users', 'danger');
-      users.value = []; // Clear the table on error
+      users.value = [];
       throw new Error(errorData.message);
     }
     
     users.value = await response.json();
-    clearAlert(); // Clear alert on success
+    clearAlert();
   } catch (error) {
-    users.value = []; // Clear table on error
+    users.value = [];
     console.error('Error fetching users:', error.message);
   }
 }
 
-// Clear Specific Field
 function clearField(field) {
   filters.value[field] = '';
 }
 
-// Open Delete Modal
 function openDeleteModal(guid) {
   userToDelete.value = guid;
 }
 
-// Confirm Delete
 async function confirmDelete() {
   if (!userToDelete.value) return;
 
@@ -246,21 +211,18 @@ async function confirmDelete() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      // setAlert(errorData.message || 'Failed to delete user', 'danger');
-      alert(errorData.message || 'Failed to delete user')
+      alert(errorData.message || 'Failed to delete user');
       throw new Error(errorData.message);
     }
 
-    // setAlert('User deleted successfully', 'success');
     alert('User deleted successfully');
-    userToDelete.value = null; // Reset selected user
+    userToDelete.value = null;
   } catch (error) {
     console.error('Error deleting user:', error.message);
   }
   await search();
 }
 
-// Close Modal Programmatically
 function closeModal() {
   const modal = document.getElementById('confirmDeleteModal');
   if (modal) {
@@ -269,17 +231,14 @@ function closeModal() {
   }
 }
 
-// Modify User
 function modifyUser(guid) {
   router.push('/profile/' + guid);
 }
 
-// New User
 function newUser() {
   router.push('/newUser');
 }
 
-// Fetch Users on Component Mount
 onMounted(search);
 </script>
 
