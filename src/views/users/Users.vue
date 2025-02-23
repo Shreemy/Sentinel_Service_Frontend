@@ -127,6 +127,7 @@
 </template>
 
 <script setup>
+import { Alert } from 'bootstrap/dist/js/bootstrap.bundle';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
@@ -245,11 +246,13 @@ async function confirmDelete() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      setAlert(errorData.message || 'Failed to delete user', 'danger');
+      // setAlert(errorData.message || 'Failed to delete user', 'danger');
+      alert(errorData.message || 'Failed to delete user')
       throw new Error(errorData.message);
     }
 
-    setAlert('User deleted successfully', 'success');
+    // setAlert('User deleted successfully', 'success');
+    alert('User deleted successfully');
     userToDelete.value = null; // Reset selected user
   } catch (error) {
     console.error('Error deleting user:', error.message);

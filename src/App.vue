@@ -2,9 +2,9 @@
   import Navbar from './components/Navbar.vue';
   import { ref } from 'vue';
 
-  const isAuthenticated = ref(true);
+  const isAuthenticated = ref(false);
 
-  if (localStorage.getItem('token')) {
+  if (localStorage.getItem('access_token')) {
   isAuthenticated.value = true;
 }
 </script>

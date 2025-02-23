@@ -4,14 +4,92 @@ JWT - token po logowaniu
 //TODO: PROFILE ----HERE
 //TODO: JWT WALIDACJA? jeśl old logout
 
+Kalendarz w szegółach - kolory bardziej dopracować
+
+wykres zamiast tabelki + przycisk ?więcej? i wtedy wykres + tabelka
+przejście na https
+wdrożenie tokenów CSRF
+Refresh tokens
+rejestrowanie ip i innych danych w ramach zwracania tokenów JWT
+procedura wdrożenia na server produkcyjny
+w celu optymalizacji rozdzielić api od sprawdzania stanu serwisów
+emaile
+raporty
+// TODO: time when last seen service
+wincyj opcji sprawdzania
+
+W influxie, czas rozpoczęcia i zakończenia testu
+Logi kto co
+rate limiting - ograniczona ilość prób logowania 
+
+2. Cache danych w backendzie – na czym polega i czy występuje w Twojej aplikacji?
+Cache danych to mechanizm buforowania wyników zapytań, który zmniejsza liczbę odwołań do bazy danych, przyspieszając działanie aplikacji i zmniejszając obciążenie serwera. W Twojej aplikacji cache może być stosowany do przechowywania wyników częstych zapytań, takich jak:
+
+Lista monitorowanych usług.
+Statusy dostępności usług.
+Dane użytkowników i ich uprawnienia.
+Czy cache występuje w Twojej aplikacji?
+Z tego, co analizowałem w Twoim kodzie, nie znalazłem bezpośrednich mechanizmów cache takich jak Redis czy memcached. Jednak Vue.js może przechowywać część danych w localStorage lub sessionStorage, co może działać jako tymczasowy cache po stronie klienta. Jeśli chcesz dodać caching na poziomie backendu, możesz użyć np. Flask-Caching lub Redis.
+
+Przykładowy kod implementacji cache w Flask:
+
+python
+Copy
+Edit
+from flask_caching import Cache
+
+app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})  # Można użyć Redis, jeśli jest dostępny
+
+@app.route('/services')
+@cache.cached(timeout=60)  # Cache zapytania na 60 sekund
+def get_services():
+    services = db.session.query(Service).all()
+    return jsonify([service.to_dict() for service in services])
+To sprawia, że lista usług jest pobierana z bazy raz na 60 sekund, zamiast przy każdym żądaniu.
+
+//Problemy według GPT
+
+Przechowywanie tokena JWT w localStorage - httpOnly cookies zamiast localStorage
+Brak odświeżania tokena JWT - refresh token mechanizm
+Brak Vuex/Pinia - Użycie globalnego store dla zarządzania stanem
+Powielanie kodu obsługi API - Wspólna warstwa api.js
+Brak centralnej obsługi błędów - try-catch w api.js
+Nieefektywne odświeżanie w Dashboard.vue - WebSocket/SSE lub manualne odświeżanie
+Nieoptymalna paginacja logów - Paginacja po stronie serwera
+Brak zabezpieczeń XSS i CSRF - httpOnly cookies i SameSite=Strict
+
+
+JWT w localStorage - Przechowywanie w httpOnly cookies
+Brak odświeżania tokena - refresh_token w cookies
+Kolejkowanie testów monitorowania - Celery + Redis dla równoległych testów
+Nieefektywne odświeżanie danych - WebSockets/SSE
+Brak paginacji logów - limit & offset w zapytaniach do InfluxDB
+Brak centralnej obsługi błędów - Middleware do obsługi wyjątków w Flask
+Brak cache’owania zapytań - Redis jako warstwa cache
+Ping jako test - HTTP, TCP i ICMP dla różnych typów usług
+Brak integracji powiadomień - Obsługa Slack, e-mail, SMS
+Brak testów - pytest dla testów jednostkowych
+
+Logika biznesowa w kontrolerach - Podział na warstwy API, logiki biznesowej i dostępu do danych
+Brak transakcji PostgreSQL - session.begin() dla operacji wymagających spójności
+Brak indeksów w bazie - Indeksy na często wyszukiwanych kolumnach (login, address, time_stamp)
+Nieefektywne zapytania do InfluxDB - LIMIT, ORDER BY w zapytaniach logów
+Brak obsługi błędów w połączeniach - Wyjątki + automatyczna ponowna próba połączenia
+Testy monitorowania w jednym wątku - Celery do kolejkowania testów
+Nieograniczone logi w bazach - Polityka retencji (90 dni dla logów)
+Brak testów jednostkowych - pytest do testowania API
+
+
+
 // GENERAL:
 // TODO: add TOAST with result in /profile/guid
 // TODO: change alerts to toasts in /users
 // TODO: update własnych danych z users
 // TODO: hash po stronie frontu
 // TODO: usunąć guidy z requestów
-
-
+    paginacja w userach
+    walidacja numerów telefonów, email-i,
 
 // notes.txt
 Przyszła rozbudowa:
@@ -81,17 +159,6 @@ Log kto i kiedy utworzył/modyfikował/usunął usługe
 Test czy serwis dodawany jest dostępny
 Powiadomienia dla wskazanych userów/grup - logowanie tego
 
-// todo.txt
-Users:
-    paginacja w userach
-    walidacja numerów telefonów, email-i,
-    czy połączyć search/get i put/post/change_pass
-Services:
-    paginacja w userach
-    wszystkie dane na wejściu na lowercase
-    walidacja czy unikalne wartości w kolumnach wyznaczonych
-    walidacja numerów telefonów, email-i,
-    czy połączyć search/get i put/post/change_pass
 
 logika powiadomień
 dodać graphy

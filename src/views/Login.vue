@@ -50,6 +50,8 @@ async function handleLogin() {
         const response = await fetch(`${apiBaseUrl}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            // credentials: 'include',
+            // mode: 'no-cors',
             body: JSON.stringify({
                 login: login.value,
                 password: password.value

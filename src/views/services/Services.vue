@@ -289,11 +289,13 @@ async function confirmDelete() {
     if (!response.ok) {
       const errorData = await response.json();
       console.log(errorData.message);
-      setAlert(errorData.message || 'Failed to delete service', 'danger');
+      // setAlert(errorData.message || 'Failed to delete service', 'danger');
+      alert(errorData.message || 'Failed to delete service');
       throw new Error(errorData.message);
     }
     services.value = [];
-    setAlert('Service deleted successfully', 'success');
+    // setAlert('Service deleted successfully', 'success');
+    alert('Service deleted successfully');
   } catch (error) {
     console.error('Error deleting service:', error.message);
   }
