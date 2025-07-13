@@ -10,9 +10,13 @@
 
 <br>
 
+---
+
 ### Navigation
 
 [Overview](#overview) | [Tech Stack](#tech-stack) | [How to Install](#how-to-install) | [Features](#features)
+
+---
 
 </div>
 
