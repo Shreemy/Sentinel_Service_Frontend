@@ -4,19 +4,17 @@
 
 <br>
 
+---
+
 <h3>Service Sentinel Frontend</h3>
 
 <p>Vue 3 application for managing and visualizing real-time service monitoring, connected to the Service Sentinel backend.</p>
-
-<br>
 
 ---
 
 ### Navigation
 
 [Overview](#overview) | [Tech Stack](#tech-stack) | [How to Install](#how-to-install) | [Features](#features)
-
----
 
 </div>
 
