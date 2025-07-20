@@ -27,7 +27,7 @@ Service Sentinel Frontend is the client-side interface of the full-stack monitor
 Related Projects:
 
 <ul>
-  <li><a href="https://github.com/Kiemoniasty/Sentinel_Service_Backend">Sentinel Service Backend</a></li>
+  <li><a href="https://github.com/Shreemy/Sentinel_Service_Backend">Sentinel Service Backend</a></li>
 </ul>
 
 <br>
